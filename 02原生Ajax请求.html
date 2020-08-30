@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<button>开启ajax请求</button>
+		<script type="text/javascript">
+			function getAjax(method, url) {
+				return new Promise((resolve, reject)=> {
+					// 创建XMLHttpRequest对象
+					let xhr = new XMLHttpRequest();
+					
+					// 打开与服务器的链接
+					xhr.open(method, url);
+					// 监听状态改变，当状态值为4及状态码为200时，表示请求成功
+					xhr.onreadystatechange = function(){
+						if(xhr.readyState == 4) {
+							if(xhr.status == 200) {
+								let obj = JSON.parse(xhr.responseText);
+								
+								// Promise状态成功
+								resolve(obj);
+							} else {
+								reject("出错")
+							}
+						}
+					}
+					// 请求服务器,来获得响应的数据
+					xhr.send();
+				})
+			}
+			
+			// 文档就绪事件
+			window.onload = function(){
+				document.querySelector("button").onclick = function() {
+					let promise = getAjax("GET", "http://localhost:9999");
+					promise.then(data=>{
+						console.log("data----", data)
+						// DOM操作：更新View
+						let h1 = document.createElement("h1");
+						h1.innerHTML = data.name + "---" + data.sex + "---" + data.age;
+						document.body.appendChild(h1);
+					})
+				}
+			}
+			
+		</script>
+	</body>
+</html>
